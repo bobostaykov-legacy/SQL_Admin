@@ -3,22 +3,45 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+
 import static java.lang.Integer.parseInt;
 
 public class NewConnectionController {
 
-    @FXML private TextField con_name = new TextField();
-    @FXML private TextField host_name = new TextField();
-    @FXML private TextField port = new TextField();
-    @FXML private TextField DB_name = new TextField();
-    @FXML private TextField username = new TextField();
-    @FXML private TextField password = new TextField();
-    @FXML private Button okBtnNewCon = new Button();
+    private static MainController mc;
 
-    public void newConnection(){
+    @FXML
+    private TextField con_name, host_name, port, DB_name, username, password;
+    @FXML
+    private Button okBtnNewCon, cancelBtnNewCon;
+
+
+    public static void injectMainController(MainController mainCont){
+        mc = mainCont;
+    }
+
+    public void newConnection(){String conName = con_name.getText();
+
         int port_num = parseInt(port.getText());
-        //Database.createConnection(host_name.getText(), port_num, DB_name.getText(), username.getText(), password.getText());
+
+        Connection connection = Database.createConnection(host_name.getText(), port_num, DB_name.getText(), username.getText(), password.getText());
+        if (connection == null) {
+            //errorDialog();
+            return;
+        }
+
+        mc.addCon(conName, connection);
+        mc.setTab();
+        mc.switchToQueryView();
+
         Stage stage = (Stage) okBtnNewCon.getScene().getWindow();
         stage.close();
     }
+
+    public void cancel(){
+        Stage stage = (Stage) cancelBtnNewCon.getScene().getWindow();
+        stage.close();
+    }
+
 }

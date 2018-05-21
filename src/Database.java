@@ -1,20 +1,19 @@
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.util.Callback;
 
 import java.sql.*;
 
 public class Database {
 
-    private static Main main = new Main();
+    private static MainClass main = new MainClass();
     private static ObservableList<Object> data;
-    @FXML private static TableView<Object> sqlTable;
-    @FXML private static TableColumn<Object, String> col;
+    @FXML
+    private static TableView<Object> sqlTable;
+    @FXML
+    private static TableColumn<Object, String> col;
 
     public static Connection createConnection(String hostname, int port, String DBname, String username, String password){
         try {
@@ -32,8 +31,7 @@ public class Database {
         }
     }
 
-    public static void runQuery(String query){
-        Connection con = main.getConnection();
+    public static void runQuery(String query, Connection con){
         try {
             ResultSet rs = con.createStatement().executeQuery(query);
 
