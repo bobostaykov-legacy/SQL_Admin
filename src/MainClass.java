@@ -1,29 +1,44 @@
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventType;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.awt.*;
-import java.beans.EventHandler;
-
 public class MainClass extends Application {
+
+    private static MainController mc;
+
+    public static void injectMainController(MainController mainCont){
+        mc = mainCont;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+        int screenWidth = (int) Screen.getPrimary().getBounds().getWidth();
+        int screenHeight = (int) Screen.getPrimary().getBounds().getHeight();
+
+        int sceneWidth = 0;
+        int sceneHeight = 0;
+
+        if (screenWidth <= 800 && screenHeight <= 600) {
+            sceneWidth = 550;
+            sceneHeight = 378;
+        } else if (screenWidth <= 1920 && screenHeight <= 1080) {
+            sceneWidth = 800;
+            sceneHeight = 550;
+        } else {
+            sceneWidth = 1850;
+            sceneHeight = 1272;
+        }
+
         Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
         primaryStage.setTitle("Bobo's MySQL Workbench");
-        primaryStage.setScene(new Scene(root, 800, 550));
+        primaryStage.setScene(new Scene(root, sceneWidth, sceneHeight));
         primaryStage.show();
+        mc.tabPaneRequestFocus();
+        mc.setPrefSizeTabPane();
     }
 
     public static void main(String[] args) {

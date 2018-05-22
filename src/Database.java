@@ -20,13 +20,11 @@ public class Database {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url = "jdbc:mysql://" + hostname + ":" + port + "/" + DBname + "?autoReconnect=true&useSSL=false";
             Connection con = DriverManager.getConnection(url, username, password);
-            System.out.println("Successfully connected to database!");
+            //System.out.println("Successfully connected to database!");
             return con;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             return null;
         } catch (SQLException e) {
-            e.printStackTrace();
             return null;
         }
     }
