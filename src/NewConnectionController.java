@@ -1,7 +1,6 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -11,19 +10,17 @@ import static java.lang.Integer.parseInt;
 
 public class NewConnectionController {
 
-    private static MainController mc;
-    private static TabController tc;
-
     @FXML
     private TextField con_name, host_name, port, DB_name, username, password;
     @FXML
     private Button okBtnNewCon, cancelBtnNewCon;
 
-
+    //to be able to call methods from MainController and TabController classes
+    private static MainController mc;
+    private static TabController tc;
     public static void injectMainController(MainController mainCont){
         mc = mainCont;
     }
-
     public static void injectTabController(TabController tabCont){
         tc = tabCont;
     }
@@ -33,27 +30,48 @@ public class NewConnectionController {
         String conName = con_name.getText();
         int port_num = parseInt(port.getText());
 
-        Connection connection = Database.createConnection(host_name.getText(), port_num, DB_name.getText(), username.getText(), password.getText());
+        Connection connection = Database.createConnection( host_name.getText(), port_num, DB_name.getText(), username.getText(), password.getText() );
+
+        //if there was a problem while connecting to the database
         if (connection == null) {
 
-            Alert alert = new Alert(Alert.AlertType.WARNING);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("There was a problem connecting to the database...");
             alert.showAndWait();
+            return;
+        }
 
+        //if the connection is already active
+        if (mc.isConNameInList(conName)){
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Connection already exists");
+            alert.setHeaderText(null);
+            alert.setContentText("A connection with the same name already exists!");
+            alert.showAndWait();
             return;
         }
 
         mc.addCon(conName, connection);
-        mc.setTab();
-        tc.switchToQueryView();
+        mc.setTab(mc.getCon());
 
+        /*
+        The initial tab that opens up when the program is started uses an interface (which is in main.fxml) identical to the one in tab.fxml,
+        but provides a way to dynamically resize the window so that the contents resize as well and everything looks good. Unfortunately, I
+        didn't find a way to retain that functionality with the other tabs, where the content of tab.fxml is used.
+        */
+        if (mc.tabPaneTabsNumber() == 2) mc.switchToQueryView();
+        else tc.switchToQueryView();
+
+        //closing the new connection window
         Stage stage = (Stage) okBtnNewCon.getScene().getWindow();
         stage.close();
     }
 
 
+    //when the "cancel" button is pressed
     public void cancel(){
         Stage stage = (Stage) cancelBtnNewCon.getScene().getWindow();
         stage.close();

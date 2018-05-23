@@ -22,6 +22,7 @@ public class MainClass extends Application {
         int sceneWidth = 0;
         int sceneHeight = 0;
 
+        //dynamically set window size, depending on the screen size
         if (screenWidth <= 800 && screenHeight <= 600) {
             sceneWidth = 550;
             sceneHeight = 378;
@@ -38,7 +39,6 @@ public class MainClass extends Application {
         primaryStage.setScene(new Scene(root, sceneWidth, sceneHeight));
         primaryStage.show();
         mc.tabPaneRequestFocus();
-        mc.setPrefSizeTabPane();
     }
 
     public static void main(String[] args) {

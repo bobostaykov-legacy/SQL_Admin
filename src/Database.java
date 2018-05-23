@@ -1,9 +1,8 @@
+import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-
 import java.sql.*;
 
 public class Database {
@@ -15,19 +14,20 @@ public class Database {
     @FXML
     private static TableColumn<Object, String> col;
 
+
+    //creating connection to the database
     public static Connection createConnection(String hostname, int port, String DBname, String username, String password){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url = "jdbc:mysql://" + hostname + ":" + port + "/" + DBname + "?autoReconnect=true&useSSL=false";
-            Connection con = DriverManager.getConnection(url, username, password);
-            //System.out.println("Successfully connected to database!");
-            return con;
+            return DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException e) {
             return null;
         } catch (SQLException e) {
             return null;
         }
     }
+
 
     public static void runQuery(String query, Connection con){
         try {
