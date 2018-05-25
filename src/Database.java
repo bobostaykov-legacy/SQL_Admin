@@ -1,4 +1,4 @@
-import javafx.fxml.FXML;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
@@ -7,12 +7,14 @@ import java.sql.*;
 
 public class Database {
 
-    private static MainClass main = new MainClass();
-    private static ObservableList<Object> data;
-    @FXML
-    private static TableView<Object> sqlTable;
-    @FXML
-    private static TableColumn<Object, String> col;
+    private static MainController mc = new MainController();
+    private static TabController tc = new TabController();
+    public static void injectMainController (MainController mainCont){
+        mc = mainCont;
+    }
+    public static void injectTabController (TabController tabCont) {
+        tc = tabCont;
+    }
 
 
     //creating connection to the database
@@ -29,30 +31,76 @@ public class Database {
     }
 
 
-    public static void runQuery(String query, Connection con){
+    public static void executeUpdate(String query, Connection con) {
         try {
-            ResultSet rs = con.createStatement().executeQuery(query);
 
-            for(int i = 0 ; i < rs.getMetaData().getColumnCount(); i++){
+            con.createStatement().executeUpdate(query);
+
+            /*
+            The initial tab that opens up when the program is started uses an interface (which is in main.fxml) identical to the one in tab.fxml,
+            but provides a way to dynamically resize the window so that the contents resize as well and everything looks good. Unfortunately, I
+            didn't find a way to retain that functionality with the other tabs, where the content of tab.fxml is used.
+            */
+            if (mc.isMainTab()) mc.setMsg("The query was executed successfully!");
+            else tc.setMsg("The query was executed successfully!");
+
+        } catch (SQLException e) {
+
+            if (mc.isMainTab()) mc.setMsg(e.getMessage());
+            else tc.setMsg(e.getMessage());
+
+        }
+    }
+
+
+    public static void executeQuery(String query, Connection con) throws SQLException {
+
+        TableView<ObservableList> sqlTable;
+        if (mc.isMainTab()) sqlTable = mc.getSQLTable();
+        else sqlTable = tc.getSQLTable();
+
+        ResultSet rs = null;
+
+        try {
+            rs = con.createStatement().executeQuery(query);
+
+            ObservableList<ObservableList> data = FXCollections.observableArrayList();
+
+            if (mc.isMainTab()) mc.clearTable();
+            else tc.clearTable();
+
+            for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
+
                 final int j = i;
-                col = new TableColumn(rs.getMetaData().getColumnName(i+1));
-                //col.setCellValueFactory((Callback<TableColumn.CellDataFeatures<ObservableList, String>, ObservableValue<String>>) param -> new SimpleStringProperty(param.getValue().get(j).toString()));
+                TableColumn<ObservableList, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j).toString()));
 
-                sqlTable.getColumns().addAll(col);
-                System.out.println("Column ["+i+"] ");
+                sqlTable.getColumns().add(col);
             }
 
-            while(rs.next()){
+            while (rs.next()) {
+                //iterate row
                 ObservableList<String> row = FXCollections.observableArrayList();
-                for(int i = 1 ; i <= rs.getMetaData().getColumnCount(); i++) row.add(rs.getString(i));
-                System.out.println("Row [1] added "+row );
+                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    //iterate column
+                    row.add(rs.getString(i));
+                }
                 data.add(row);
             }
 
             sqlTable.setItems(data);
 
+            if (mc.isMainTab()) mc.setMsg("The query was executed successfully!");
+            else tc.setMsg("The query was executed successfully!");
+
         } catch (SQLException e) {
-            e.printStackTrace();
+
+            if (mc.isMainTab()) mc.setMsg(e.getMessage());
+            else tc.setMsg(e.getMessage());
+
+        } finally {
+            if (rs != null) rs.close();
         }
+
     }
 }

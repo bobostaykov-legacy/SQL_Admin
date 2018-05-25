@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="NewConnectionController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #dadaf1;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="NewConnectionController">
    <children>
       <VBox layoutX="51.0" layoutY="44.0" prefHeight="293.0" prefWidth="215.0" spacing="35.0">
          <children>
@@ -38,8 +38,8 @@
             <PasswordField fx:id="password" text="Ly3F!N20-16Z" />
             <HBox prefHeight="36.0" prefWidth="318.0" spacing="25.0">
                <children>
-                  <Button fx:id="cancelBtnNewCon" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="70.0" text="Cancel" />
-                  <Button fx:id="okBtnNewCon" mnemonicParsing="false" onAction="#newConnection" prefHeight="26.0" prefWidth="70.0" text="OK" />
+                  <Button fx:id="cancelBtnNewCon" blendMode="MULTIPLY" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="70.0" text="Cancel" />
+                  <Button fx:id="okBtnNewCon" blendMode="MULTIPLY" mnemonicParsing="false" onAction="#newConnection" prefHeight="26.0" prefWidth="70.0" text="OK" />
                </children>
                <padding>
                   <Insets left="155.0" top="3.0" />

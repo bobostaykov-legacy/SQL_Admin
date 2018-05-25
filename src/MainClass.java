@@ -27,11 +27,11 @@ public class MainClass extends Application {
             sceneWidth = 550;
             sceneHeight = 378;
         } else if (screenWidth <= 1920 && screenHeight <= 1080) {
-            sceneWidth = 800;
-            sceneHeight = 550;
+            sceneWidth = 1000;
+            sceneHeight = 670;
         } else {
-            sceneWidth = 1850;
-            sceneHeight = 1272;
+            sceneWidth = 3300;
+            sceneHeight = 2550;
         }
 
         Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));

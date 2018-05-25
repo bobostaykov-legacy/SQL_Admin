@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
@@ -11,9 +12,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<TabPane fx:id="tab_pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" tabClosingPolicy="ALL_TABS" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+<TabPane fx:id="tab_pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" style="-fx-background-color: #dadaf1;" tabClosingPolicy="ALL_TABS" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
   <tabs>
-    <Tab text="New Connection">
+    <Tab fx:id="main_tab" text="New Connection">
         <GridPane fx:id="tab_1">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -24,19 +25,29 @@
             <children>
                 <GridPane fx:id="query_view_1" visible="false">
                     <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1200.0" minWidth="10.0" prefWidth="618.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1500.0" minWidth="10.0" prefWidth="618.0" />
                         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="132.0" minWidth="132.0" prefWidth="132.0" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints maxHeight="83.0" minHeight="60.0" prefHeight="83.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="44.0" minHeight="30.0" prefHeight="44.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="500.0" minHeight="10.0" prefHeight="341.0" valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="83.0" minHeight="60.0" prefHeight="75.0" valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="56.0" minHeight="30.0" prefHeight="56.0" valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="750.0" minHeight="10.0" prefHeight="323.0" valignment="CENTER" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Button fx:id="run_btn" mnemonicParsing="false" prefHeight="26.0" prefWidth="76.0" text="Execute" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
-                        <TextField fx:id="query_field" prefWidth="618.0" promptText="Insert Query..." />
-                        <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-                        <Label text="Here will be shown the exception whenever ther is one." GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                        <Button fx:id="exe_btn_1" blendMode="MULTIPLY" mnemonicParsing="false" onAction="#executeAction" prefHeight="26.0" prefWidth="76.0" text="Execute" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                        <TextField fx:id="query_field_1" onAction="#executeAction" prefWidth="618.0" promptText="Insert Query..." />
+                        <TableView fx:id="sql_table_1" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ededf8;" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                     <ScrollPane hbarPolicy="ALWAYS" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ededf8;" vbarPolicy="NEVER" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <content>
+                           <Label fx:id="msg_1" maxWidth="1500.0" prefHeight="38.0">
+                              <opaqueInsets>
+                                 <Insets />
+                              </opaqueInsets>
+                              <padding>
+                                 <Insets left="15.0" />
+                              </padding></Label>
+                        </content>
+                     </ScrollPane>
                     </children>
                     <padding>
                         <Insets bottom="50.0" left="50.0" right="50.0" top="15.0" />
@@ -56,7 +67,7 @@
                         <RowConstraints percentHeight="25.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Button mnemonicParsing="false" onAction="#openNewConWindow" prefHeight="62.0" prefWidth="125.0" text="New Connection" />
+                        <Button blendMode="MULTIPLY" mnemonicParsing="false" onAction="#openNewConWindow" prefHeight="48.0" prefWidth="125.0" text="New Connection" />
                     </children>
                   <padding>
                      <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />

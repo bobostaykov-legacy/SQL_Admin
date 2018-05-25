@@ -62,7 +62,7 @@ public class NewConnectionController {
         but provides a way to dynamically resize the window so that the contents resize as well and everything looks good. Unfortunately, I
         didn't find a way to retain that functionality with the other tabs, where the content of tab.fxml is used.
         */
-        if (mc.tabPaneTabsNumber() == 2) mc.switchToQueryView();
+        if (mc.isMainTab()) mc.switchToQueryView();
         else tc.switchToQueryView();
 
         //closing the new connection window
