@@ -18,7 +18,7 @@ public class Database {
 
 
     //creating connection to the database
-    public static Connection createConnection(String hostname, int port, String DBname, String username, String password){
+    public static Connection createConnection(String hostname, String port, String DBname, String username, String password){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url = "jdbc:mysql://" + hostname + ":" + port + "/" + DBname + "?autoReconnect=true&useSSL=false";

@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -23,16 +24,15 @@ public class MainController implements Initializable {
     @FXML
     private GridPane tab_1, query_view_1, connections_view_1;
     @FXML
-    private TextField query_field_1;
+    private TextArea query_field_1;
     @FXML
     private TableView<ObservableList> sql_table_1;
     @FXML
     private Label msg_1;
     @FXML
     private Tab main_tab;
-    @FXML
-    private Button exe_btn_1;
 
+    SaveAndRestore sar = new SaveAndRestore();
 
     //to store the active connections
     private LinkedList<ConnectionPlusName> connections = new LinkedList<>();
@@ -50,7 +50,38 @@ public class MainController implements Initializable {
         MainClass.injectMainController(this);
         TabController.injectMainController(this);
         Database.injectMainController(this);
-        exe_btn_1.setTooltip(new Tooltip("Or press Enter"));
+
+
+        //adding the saved connections to the connections_view as buttons if there are any
+        if (sar.ipInDB()) {
+            String[] cons = sar.restoreFromDB().split(";");
+            int i = 1, j = 0;
+            for (String curr : cons) {
+                String conName = curr.split(",")[0];
+                String hostName = curr.split(",")[1];
+                String port = curr.split(",")[2];
+                String databaseName = curr.split(",")[3];
+                String user = curr.split(",")[4];
+                String pass = curr.split(",")[5];
+                Connection con = Database.createConnection(hostName, port, databaseName, user, pass);
+                addCon(conName, con);
+
+                Button conButton = new Button(conName);
+                conButton.setMaxWidth(125);
+                conButton.setPrefHeight(62);
+                conButton.setBlendMode(BlendMode.MULTIPLY);
+                conButton.setOnAction(e -> {
+                    switchToQueryView();
+                    setTab(conName);
+                });
+                connections_view_1.add(conButton, i, j);
+                i++;
+                if (i == 4) {
+                    i = 0;
+                    j++;
+                }
+            }
+        }
     }
 
 
@@ -180,16 +211,5 @@ public class MainController implements Initializable {
         sql_table_1.getColumns().clear();
     }
 
-
-    public String connectionsAsString() {
-       StringBuilder sb = new StringBuilder();
-       for (ConnectionPlusName curr : connections) {
-           sb.append(curr.getName());
-           sb.append(",");
-           sb.append(curr.getConnection());
-           sb.append(";");
-       }
-       return sb.toString();
-    }
 
 }

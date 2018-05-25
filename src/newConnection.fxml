@@ -30,12 +30,12 @@
       </VBox>
       <VBox layoutX="232.0" layoutY="44.0" prefHeight="346.0" prefWidth="318.0" spacing="24.0">
          <children>
-            <TextField fx:id="con_name" text="GearHost" />
-            <TextField fx:id="host_name" text="den1.mysql4.gear.host" />
+            <TextField fx:id="con_name" />
+            <TextField fx:id="host_name" />
             <TextField fx:id="port" text="3306" />
-            <TextField fx:id="DB_name" text="borisdatabase" />
-            <TextField fx:id="username" text="borisdatabase" />
-            <PasswordField fx:id="password" text="Ly3F!N20-16Z" />
+            <TextField fx:id="DB_name" />
+            <TextField fx:id="username" />
+            <PasswordField fx:id="password" />
             <HBox prefHeight="36.0" prefWidth="318.0" spacing="25.0">
                <children>
                   <Button fx:id="cancelBtnNewCon" blendMode="MULTIPLY" mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="70.0" text="Cancel" />

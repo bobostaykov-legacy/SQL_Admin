@@ -15,6 +15,8 @@ public class NewConnectionController {
     @FXML
     private Button okBtnNewCon, cancelBtnNewCon;
 
+    SaveAndRestore sar = new SaveAndRestore();
+
     //to be able to call methods from MainController and TabController classes
     private static MainController mc;
     private static TabController tc;
@@ -28,9 +30,8 @@ public class NewConnectionController {
 
     public void newConnection(){
         String conName = con_name.getText();
-        int port_num = parseInt(port.getText());
 
-        Connection connection = Database.createConnection( host_name.getText(), port_num, DB_name.getText(), username.getText(), password.getText() );
+        Connection connection = Database.createConnection( host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText() );
 
         //if there was a problem while connecting to the database
         if (connection == null) {
@@ -53,6 +54,9 @@ public class NewConnectionController {
             alert.showAndWait();
             return;
         }
+
+        //saving the information so that the user does not have to input it again next time they use the program
+        sar.saveToDB( conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText() );
 
         mc.addCon(conName, connection);
         mc.setTab(mc.getCon());

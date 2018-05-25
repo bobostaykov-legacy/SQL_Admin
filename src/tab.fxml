@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -20,30 +20,31 @@
     <children>
         <GridPane fx:id="query_view" visible="false">
             <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1200.0" minWidth="10.0" prefWidth="618.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="132.0" minWidth="132.0" prefWidth="132.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1200.0" minWidth="10.0" prefWidth="578.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="132.0" minWidth="122.0" prefWidth="122.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="83.0" minHeight="60.0" prefHeight="75.0" valignment="CENTER" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="60.0" minHeight="30.0" prefHeight="55.0" valignment="CENTER" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="500.0" minHeight="10.0" prefHeight="323.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="22.0" minHeight="22.0" prefHeight="22.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="500.0" minHeight="10.0" prefHeight="268.0" valignment="CENTER" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Button fx:id="exe_btn" blendMode="MULTIPLY" mnemonicParsing="false" onAction="#executeAction" prefHeight="26.0" prefWidth="76.0" text="Execute" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
-                <TextField fx:id="query_field" onAction="#executeAction" prefWidth="618.0" promptText="Insert Query..." />
-                <TableView fx:id="sql_table" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ededf8;" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-            <ScrollPane hbarPolicy="ALWAYS" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ededf8;" vbarPolicy="NEVER" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                <TableView fx:id="sql_table" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ededf8;" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+            <ScrollPane hbarPolicy="ALWAYS" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ededf8;" vbarPolicy="NEVER" GridPane.columnSpan="2" GridPane.rowIndex="2">
                <content>
                   <Label fx:id="msg" maxWidth="1500.0" prefHeight="38.0">
                      <padding>
-                        <Insets left="15.0" />
+                        <Insets bottom="11.0" left="15.0" />
                      </padding>
                   </Label>
                </content>
             </ScrollPane>
+            <TextArea fx:id="query_field" prefHeight="200.0" prefWidth="568.0" promptText="Insert query..." />
             </children>
             <padding>
-                <Insets bottom="50.0" left="50.0" right="50.0" top="15.0" />
+                <Insets bottom="50.0" left="50.0" right="50.0" top="40.0" />
             </padding>
         </GridPane>
         <GridPane fx:id="connections_view">

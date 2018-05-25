@@ -18,15 +18,13 @@ import java.util.ResourceBundle;
 public class TabController implements Initializable {
 
     @FXML
-    private TextField query_field;
+    private TextArea query_field;
     @FXML
     private GridPane tab, query_view, connections_view;
     @FXML
     private TableView<ObservableList> sql_table;
     @FXML
     private Label msg;
-    @FXML
-    private Button exe_btn;
 
     //to be able to call methods from MainController class
     private static MainController mc = new MainController();
@@ -40,8 +38,6 @@ public class TabController implements Initializable {
         NewConnectionController.injectTabController(this);
         MainController.injectTabController(this);
         Database.injectTabController(this);
-
-        exe_btn.setTooltip(new Tooltip("Or press Enter"));
 
         //adding the active connections to the connections_view as buttons
         int i = 1, j = 0;
