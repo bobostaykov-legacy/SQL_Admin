@@ -44,21 +44,34 @@ public class NewConnectionController {
             return;
         }
 
-        //if the connection is already active
+        //if a connection with the same name already exists
         if (mc.isConNameInList(conName)){
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Connection already exists");
+            alert.setTitle("Connection name already exists");
             alert.setHeaderText(null);
             alert.setContentText("A connection with the same name already exists!");
             alert.showAndWait();
             return;
         }
 
+        //if a connection to that database is already active
+        for (ConnectionInfo curr : mc.allConnections()) {
+            if (curr.getDatabaseName().equals(DB_name.getText()) && curr.getHostName().equals(host_name.getText())) {
+
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Connection already exists");
+                alert.setHeaderText(null);
+                alert.setContentText("A connection to that server/database already exists!");
+                alert.showAndWait();
+                return;
+            }
+        }
+
         //saving the information so that the user does not have to input it again next time they use the program
         sar.saveToDB( conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText() );
 
-        mc.addCon(conName, connection);
+        mc.addCon(conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText(), connection);
         mc.setTab(mc.getCon());
 
         /*

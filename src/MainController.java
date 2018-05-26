@@ -7,8 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sun.awt.image.ImageWatched;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,11 +35,16 @@ public class MainController implements Initializable {
     private Label msg_1;
     @FXML
     private Tab main_tab;
+    @FXML
+    private Button exe_btn_1;
 
     SaveAndRestore sar = new SaveAndRestore();
 
     //to store the active connections
-    private LinkedList<ConnectionPlusName> connections = new LinkedList<>();
+    private LinkedList<ConnectionInfo> connections = new LinkedList<>();
+
+    //to store the buttons for the connections in the connections_view
+    private LinkedList<Buttons> buttons = new LinkedList<>();
 
     //to be able to call methods from TabController class
     private static TabController tc = new TabController();
@@ -55,7 +64,6 @@ public class MainController implements Initializable {
         //adding the saved connections to the connections_view as buttons if there are any
         if (sar.ipInDB()) {
             String[] cons = sar.restoreFromDB().split(";");
-            int i = 1, j = 0;
             for (String curr : cons) {
                 String conName = curr.split(",")[0];
                 String hostName = curr.split(",")[1];
@@ -64,24 +72,23 @@ public class MainController implements Initializable {
                 String user = curr.split(",")[4];
                 String pass = curr.split(",")[5];
                 Connection con = Database.createConnection(hostName, port, databaseName, user, pass);
-                addCon(conName, con);
+                addCon(conName, hostName, port, databaseName, user, pass, con);
+            }
+            addConButtons();
+        }
 
-                Button conButton = new Button(conName);
-                conButton.setMaxWidth(125);
-                conButton.setPrefHeight(62);
-                conButton.setBlendMode(BlendMode.MULTIPLY);
-                conButton.setOnAction(e -> {
-                    switchToQueryView();
-                    setTab(conName);
-                });
-                connections_view_1.add(conButton, i, j);
-                i++;
-                if (i == 4) {
-                    i = 0;
-                    j++;
+        exe_btn_1.setTooltip(new Tooltip("Or use [Ctrl+Enter]"));
+
+        //the query can also be executed with [Ctrl+Enter]
+        query_field_1.setOnKeyPressed(e ->  {
+            if ((new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN)).match(e)) {
+                try {
+                    executeAction();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
                 }
             }
-        }
+        });
     }
 
 
@@ -107,6 +114,12 @@ public class MainController implements Initializable {
     }
 
 
+    public void switchToConnectionsView(){
+        query_view_1.setVisible(false);
+        connections_view_1.setVisible(true);
+    }
+
+
     //creating a new tab and switching to it after pressing the button "New"
     public void addNewTab() throws IOException{
         Tab newTab = new Tab("New Connection");
@@ -128,20 +141,25 @@ public class MainController implements Initializable {
 
 
     //adding a connection to the LinkedList
-    public void addCon(String name, Connection con){
-        connections.add(new ConnectionPlusName(name, con));
+    public void addCon(String conName, String hostName, String port, String databaseName, String user, String pass, Connection connection){
+        connections.add(new ConnectionInfo(conName, hostName, port, databaseName, user, pass, connection));
     }
 
 
     //getting lastly added connection
     public String getCon(){
         if (connections.size() == 0) return "null";
-        return connections.getLast().getName();
+        return connections.getLast().getConName();
     }
 
 
-    public LinkedList<ConnectionPlusName> allConnections(){
+    public LinkedList<ConnectionInfo> allConnections(){
         return connections;
+    }
+
+
+    public LinkedList<Buttons> allButtons() {
+        return buttons;
     }
 
 
@@ -162,8 +180,8 @@ public class MainController implements Initializable {
 
     //checks if a connection is already active
     public boolean isConNameInList(String name){
-        for (ConnectionPlusName current : connections){
-            if (current.getName().equals(name)) return true;
+        for (ConnectionInfo current : connections){
+            if (current.getConName().equals(name)) return true;
         }
         return false;
     }
@@ -176,8 +194,8 @@ public class MainController implements Initializable {
         Connection con = null;
         String firstWord = query.split(" ")[0];
 
-        for (ConnectionPlusName current : connections) {
-            if (current.getName().equals(getCurrentTabName())) con = current.getConnection();
+        for (ConnectionInfo current : connections) {
+            if (current.getConName().equals(getCurrentTabName())) con = current.getConnection();
         }
 
         boolean insert = firstWord.equalsIgnoreCase("insert");
@@ -202,14 +220,93 @@ public class MainController implements Initializable {
 
 
     //the message to be displayed to the user
-    public void setMsg (String m) {
+    public void setMsg(String m) {
         msg_1.setText(m);
     }
 
 
-    public void clearTable () {
+    public void clearTable() {
         sql_table_1.getColumns().clear();
     }
 
 
+    public void closeConnection() throws SQLException{
+        String conName = getCurrentTabName();
+        for (ConnectionInfo curr : connections) {
+            if (curr.getConName().equals(conName)) {
+                curr.getConnection().close();
+                connections.remove(curr);
+                sar.removeFromDB(curr.getConName());
+                break;
+            }
+        }
+        removeConButtons();
+        removeButton(conName);
+        addConButtons();
+        setTab("New Connection");
+        switchToConnectionsView();
+    }
+
+
+    public boolean buttonInList(Button btn) {
+        for (Buttons curr : buttons) {
+            if (curr.getButton().equals(btn)) return true;
+        }
+        return false;
+    }
+
+
+    public void removeButton(String btnName) {
+        for (Buttons curr : buttons) {
+            if (curr.getName().equals(btnName)) {
+                buttons.remove(curr);
+                return;
+            }
+        }
+    }
+
+
+    //adding the active connections to the connections_view as buttons
+    private void addConButtons() {
+        int i = 1, j = 0;
+        for (ConnectionInfo current : connections) {
+            Button conButton = new Button(current.getConName());
+            if (!buttonInList(conButton)) buttons.add(new Buttons(current.getConName(), conButton));
+            conButton.setMaxWidth(125);
+            conButton.setPrefHeight(62);
+            conButton.setBlendMode(BlendMode.MULTIPLY);
+            conButton.setOnAction(e -> {
+                switchToQueryView();
+                setTab(current.getConName());
+            });
+            connections_view_1.add(conButton, i, j);
+            i++;
+            if (i == 4) {
+                i = 0;
+                j++;
+            }
+        }
+    }
+
+
+    private void removeConButtons() {
+        for (Buttons curr : buttons) {
+            connections_view_1.getChildren().remove(curr.getButton());
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -30,9 +30,10 @@
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" valignment="CENTER" vgrow="SOMETIMES" />
-                     <RowConstraints maxHeight="22.0" minHeight="22.0" prefHeight="22.0" valignment="CENTER" vgrow="SOMETIMES" />
+                     <RowConstraints maxHeight="17.0" minHeight="17.0" prefHeight="17.0" valignment="CENTER" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" valignment="CENTER" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="750.0" minHeight="10.0" prefHeight="323.0" valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="750.0" minHeight="10.0" prefHeight="265.0" valignment="CENTER" vgrow="SOMETIMES" />
+                     <RowConstraints maxHeight="39.0" minHeight="39.0" prefHeight="39.0" valignment="CENTER" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
                         <Button fx:id="exe_btn_1" blendMode="MULTIPLY" mnemonicParsing="false" onAction="#executeAction" prefHeight="26.0" prefWidth="76.0" text="Execute" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
@@ -49,9 +50,10 @@
                         </content>
                      </ScrollPane>
                      <TextArea fx:id="query_field_1" prefHeight="200.0" prefWidth="200.0" promptText="Insert query..." />
+                     <Button blendMode="MULTIPLY" mnemonicParsing="false" onAction="#closeConnection" prefHeight="26.0" prefWidth="143.0" text="Close Connection" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
                     </children>
                     <padding>
-                        <Insets bottom="50.0" left="50.0" right="50.0" top="40.0" />
+                        <Insets bottom="23.0" left="40.0" right="40.0" top="30.0" />
                     </padding>
                 </GridPane>
                 <GridPane fx:id="connections_view_1">

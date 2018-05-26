@@ -60,6 +60,15 @@ public class SaveAndRestore {
     }
 
 
+    public void removeFromDB(String conName) {
+        try {
+            con.createStatement().executeUpdate("delete from mymysqlwb where connectionName = '" + conName + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public boolean ipInDB() {
         String IP = getIP();
         Statement stmt = null;

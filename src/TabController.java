@@ -6,6 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -25,6 +28,10 @@ public class TabController implements Initializable {
     private TableView<ObservableList> sql_table;
     @FXML
     private Label msg;
+    @FXML
+    private Button exe_btn;
+
+    private SaveAndRestore sar = new SaveAndRestore();
 
     //to be able to call methods from MainController class
     private static MainController mc = new MainController();
@@ -39,24 +46,20 @@ public class TabController implements Initializable {
         MainController.injectTabController(this);
         Database.injectTabController(this);
 
-        //adding the active connections to the connections_view as buttons
-        int i = 1, j = 0;
-        for (ConnectionPlusName current : mc.allConnections()) {
-            Button conButton = new Button(current.getName());
-            conButton.setMaxWidth(125);
-            conButton.setPrefHeight(62);
-            conButton.setBlendMode(BlendMode.MULTIPLY);
-            conButton.setOnAction(e -> {
-                switchToQueryView();
-                mc.setTab(current.getName());
-            });
-            connections_view.add(conButton, i, j);
-            i++;
-            if (i == 4) {
-                i = 0;
-                j++;
+        addConButtons();
+
+        exe_btn.setTooltip(new Tooltip("Or use [Ctrl+Enter]"));
+
+        //the query can also be executed with [Ctrl+Enter]
+        query_field.setOnKeyPressed(e ->  {
+            if ((new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN)).match(e)) {
+                try {
+                    executeAction();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             }
-        }
+        });
     }
 
 
@@ -89,8 +92,8 @@ public class TabController implements Initializable {
         Connection con = null;
         String firstWord = query.split(" ")[0];
 
-        for (ConnectionPlusName current : mc.allConnections()) {
-            if (current.getName().equals(mc.getCurrentTabName())) con = current.getConnection();
+        for (ConnectionInfo current : mc.allConnections()) {
+            if (current.getConName().equals(mc.getCurrentTabName())) con = current.getConnection();
         }
 
         boolean insert = firstWord.equalsIgnoreCase("insert");
@@ -125,7 +128,56 @@ public class TabController implements Initializable {
         msg.setText(m);
     }
 
+
     public void clearTable () {
         sql_table.getColumns().clear();
+    }
+
+
+    public void closeConnection() throws SQLException{
+        String conName = mc.getCurrentTabName();
+        for (ConnectionInfo curr : mc.allConnections()) {
+            if (curr.getConName().equals(conName)) {
+                curr.getConnection().close();
+                mc.allConnections().remove(curr);
+                sar.removeFromDB(curr.getConName());
+                break;
+            }
+        }
+        removeConButtons();
+        mc.removeButton(conName);
+        addConButtons();
+        mc.setTab("New Connection");
+        mc.switchToConnectionsView();
+    }
+
+
+    //adding the active connections to the connections_view as buttons
+    private void addConButtons() {
+        int i = 1, j = 0;
+        for (ConnectionInfo current : mc.allConnections()) {
+            Button conButton = new Button(current.getConName());
+            if (!mc.buttonInList(conButton)) mc.allButtons().add(new Buttons(current.getConName(), conButton));
+            conButton.setMaxWidth(125);
+            conButton.setPrefHeight(62);
+            conButton.setBlendMode(BlendMode.MULTIPLY);
+            conButton.setOnAction(e -> {
+                switchToQueryView();
+                mc.setTab(current.getConName());
+            });
+            connections_view.add(conButton, i, j);
+            i++;
+            if (i == 4) {
+                i = 0;
+                j++;
+            }
+        }
+    }
+
+
+    private void removeConButtons() {
+        for (Buttons curr : mc.allButtons()) {
+            connections_view.getChildren().remove(curr.getButton());
+        }
     }
 }
