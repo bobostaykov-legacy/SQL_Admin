@@ -1,2 +1,2 @@
 # My_MySQL_Workbench
-A simple MySQL Workbench alternative
+The executable jar file is under out/artifacts/MyMySQLWB_jar
