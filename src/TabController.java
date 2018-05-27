@@ -85,6 +85,12 @@ public class TabController implements Initializable {
     }
 
 
+    public void switchToConnectionsView(){
+        query_view.setVisible(false);
+        connections_view.setVisible(true);
+    }
+
+
     //after pressing the button "Execute" the query is being sent to the database and executed
     public void executeAction() throws SQLException {
 
@@ -148,7 +154,7 @@ public class TabController implements Initializable {
         mc.removeButton(conName);
         addConButtons();
         mc.setTab("New Connection");
-        mc.switchToConnectionsView();
+        switchToConnectionsView();
     }
 
 
@@ -175,6 +181,7 @@ public class TabController implements Initializable {
     }
 
 
+    //removing all buttons from connections_view
     private void removeConButtons() {
         for (Buttons curr : mc.allButtons()) {
             connections_view.getChildren().remove(curr.getButton());

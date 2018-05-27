@@ -6,8 +6,6 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 
-import static java.lang.Integer.parseInt;
-
 public class NewConnectionController {
 
     @FXML
@@ -28,6 +26,7 @@ public class NewConnectionController {
     }
 
 
+    //using the input by the user info to connect to their database
     public void newConnection(){
         String conName = con_name.getText();
 

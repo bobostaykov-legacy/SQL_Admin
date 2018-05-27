@@ -12,7 +12,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import sun.awt.image.ImageWatched;
 
 import java.io.IOException;
 import java.net.URL;

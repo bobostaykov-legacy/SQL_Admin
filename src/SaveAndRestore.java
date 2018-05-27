@@ -1,12 +1,21 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.*;
+import java.util.Properties;
 
 public class SaveAndRestore {
 
-    private Connection con =  Database.createConnection("den1.mysql4.gear.host", "3306", "borisdatabase", "borisdatabase", "Ly3F!N20-16Z");
+    //connecting to my database
+    private String username = getLogin().getUser();
+    private String password = getLogin().getPass();
+    private Connection con =  Database.createConnection("den1.mysql4.gear.host", "3306", "borisdatabase", username, password);
+
     private String IP = getIP();
 
+    //saving info to database so that the user doesn't have to enter it every time they run the program
     public void saveToDB(String conName, String hostName, String port, String databaseName, String user, String pass) {
         PreparedStatement prSt = null;
         try {
@@ -33,6 +42,7 @@ public class SaveAndRestore {
     }
 
 
+    //automatically restoring info from database
     public String restoreFromDB() {
         StringBuilder sb = new StringBuilder();
         ResultSet rs = null;
@@ -60,6 +70,7 @@ public class SaveAndRestore {
     }
 
 
+    //removing the info about the user's connection when they press "close connection" button
     public void removeFromDB(String conName) {
         try {
             con.createStatement().executeUpdate("delete from mymysqlwb where connectionName = '" + conName + "'");
@@ -69,6 +80,7 @@ public class SaveAndRestore {
     }
 
 
+    //checking if the current computer's IP address is already in the database
     public boolean ipInDB() {
         String IP = getIP();
         Statement stmt = null;
@@ -104,6 +116,7 @@ public class SaveAndRestore {
     }
 
 
+    //getting the current computers IP address
     private static String getIP() {
         InetAddress IP;
         try {
@@ -113,6 +126,24 @@ public class SaveAndRestore {
             return null;
         }
         return IP.toString();
+    }
+
+
+    //loading the username and password for my database from a local file
+    private Login getLogin() {
+
+        Properties login = new Properties();
+        try {
+            FileReader in = new FileReader("/home/boris/IdeaProjects/MyMySQLWB/src/login.properties");
+            login.load(in);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String user = login.getProperty("username");
+        String pass = login.getProperty("password");
+        return new Login(user, pass);
     }
 
 }

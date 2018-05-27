@@ -69,6 +69,9 @@ public class Database {
             if (mc.isMainTab()) mc.clearTable();
             else tc.clearTable();
 
+            //---getting all items from the database table to fill the table in query_view---
+
+            //getting column names
             for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
 
                 final int j = i;
