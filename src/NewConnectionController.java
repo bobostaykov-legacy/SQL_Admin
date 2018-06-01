@@ -68,7 +68,7 @@ public class NewConnectionController {
         }
 
         //saving the information so that the user does not have to input it again next time they use the program
-        sar.saveToDB( conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText() );
+        sar.saveToDB( conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), EncryptDecrypt.encrypt(password.getText()) );
 
         mc.addCon(conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText(), connection);
         mc.setTab(mc.getCon());

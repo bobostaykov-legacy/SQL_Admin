@@ -1,17 +1,11 @@
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.*;
-import java.util.Properties;
 
 public class SaveAndRestore {
 
-    //connecting to my database
-    private String username = getLogin().getUser();
-    private String password = getLogin().getPass();
-    private Connection con =  Database.createConnection("den1.mysql4.gear.host", "3306", "borisdatabase", username, password);
+    private Temp t = new Temp();
+    private Connection con = Database.createConnection(t.getA(), t.getB(), t.getC(), t.getD(), t.getE());
 
     private String IP = getIP();
 
@@ -32,11 +26,7 @@ public class SaveAndRestore {
             e.printStackTrace();
         } finally {
             if (prSt != null) {
-                try {
-                    prSt.close();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
+                try { prSt.close(); } catch (SQLException e1) {}
             }
         }
     }
@@ -54,17 +44,13 @@ public class SaveAndRestore {
                 String port = rs.getString("port");
                 String databaseName = rs.getString("databaseName");
                 String user = rs.getString("user");
-                String pass = rs.getString("pass");
+                String pass = EncryptDecrypt.decrypt(rs.getString("pass"));
                 sb.append(conName + "," + hostName + "," + port + "," + databaseName + "," + user + "," + pass + ";");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            try { if (rs != null) rs.close(); } catch (SQLException e) {}
         }
         return sb.toString().substring(0, sb.toString().length() - 1);
     }
@@ -126,24 +112,6 @@ public class SaveAndRestore {
             return null;
         }
         return IP.toString();
-    }
-
-
-    //loading the username and password for my database from a local file
-    private Login getLogin() {
-
-        Properties login = new Properties();
-        try {
-            FileReader in = new FileReader("/home/boris/IdeaProjects/MyMySQLWB/src/login.properties");
-            login.load(in);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String user = login.getProperty("username");
-        String pass = login.getProperty("password");
-        return new Login(user, pass);
     }
 
 }
