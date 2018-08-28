@@ -37,7 +37,7 @@ public class MainController implements Initializable {
     @FXML
     private Button exe_btn_1;
 
-    SaveAndRestore sar = new SaveAndRestore();
+    private SaveAndRestore sar = new SaveAndRestore();
 
     //to store the active connections
     private LinkedList<ConnectionInfo> connections = new LinkedList<>();
@@ -70,7 +70,8 @@ public class MainController implements Initializable {
                 String databaseName = curr.split(",")[3];
                 String user = curr.split(",")[4];
                 String pass = curr.split(",")[5];
-                Connection con = Database.createConnection(hostName, port, databaseName, user, pass);
+                String DBtype = curr.split(",")[6];
+                Connection con = Database.createConnection(hostName, port, databaseName, user, pass, DBtype);
                 addCon(conName, hostName, port, databaseName, user, pass, con);
             }
             addConButtons();
@@ -81,11 +82,7 @@ public class MainController implements Initializable {
         //the query can also be executed with [Ctrl+Enter]
         query_field_1.setOnKeyPressed(e ->  {
             if ((new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN)).match(e)) {
-                try {
-                    executeAction();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
+                executeAction();
             }
         });
     }
@@ -98,7 +95,7 @@ public class MainController implements Initializable {
             root = FXMLLoader.load(getClass().getResource("newConnection.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Create a new Connection");
-            stage.setScene(new Scene(root, 600, 400));
+            stage.setScene(new Scene(root, 600, 460));
             stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
@@ -187,14 +184,15 @@ public class MainController implements Initializable {
 
 
     //after pressing the button "Execute" the query is being sent to the database and executed
-    public void executeAction() throws SQLException {
+    public void executeAction() {
 
         String query = query_field_1.getText();
         Connection con = null;
         String firstWord = query.split(" ")[0];
 
         for (ConnectionInfo current : connections) {
-            if (current.getConName().equals(getCurrentTabName())) con = current.getConnection();
+            if (current.getConName().equals(getCurrentTabName()))
+                con = current.getConnection();
         }
 
         boolean insert = firstWord.equalsIgnoreCase("insert");

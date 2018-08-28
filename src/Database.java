@@ -18,10 +18,16 @@ public class Database {
 
 
     //creating connection to the database
-    public static Connection createConnection(String hostname, String port, String DBname, String username, String password){
+    public static Connection createConnection(String hostname, String port, String DBname, String username, String password, String DBtype){
+        String url;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://" + hostname + ":" + port + "/" + DBname + "?autoReconnect=true&useSSL=false";
+            if (DBtype.equals("MySQL")) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                url = "jdbc:mysql://" + hostname + ":" + port + "/" + DBname + "?unicode=true&autoReconnect=true&useSSL=false";
+            } else /* if (DBtype.equals("PostgreSQL") */ {
+                Class.forName("org.postgresql.Driver");
+                url = "jdbc:postgresql://" + hostname + ":" + port + "/" + DBname + "?unicode=true&autoReconnect=true&useSSL=false";
+            }
             return DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException e) {
             return null;
@@ -53,16 +59,13 @@ public class Database {
     }
 
 
-    public static void executeQuery(String query, Connection con) throws SQLException {
+    public static void executeQuery(String query, Connection con) {
 
         TableView<ObservableList> sqlTable;
         if (mc.isMainTab()) sqlTable = mc.getSQLTable();
         else sqlTable = tc.getSQLTable();
 
-        ResultSet rs = null;
-
-        try {
-            rs = con.createStatement().executeQuery(query);
+        try (ResultSet rs = con.createStatement().executeQuery(query)) {
 
             ObservableList<ObservableList> data = FXCollections.observableArrayList();
 
@@ -101,8 +104,6 @@ public class Database {
             if (mc.isMainTab()) mc.setMsg(e.getMessage());
             else tc.setMsg(e.getMessage());
 
-        } finally {
-            if (rs != null) rs.close();
         }
 
     }

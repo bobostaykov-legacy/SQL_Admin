@@ -1,19 +1,31 @@
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URL;
+import java.security.SecureRandom;
 import java.sql.Connection;
+import java.util.Base64;
+import java.util.ResourceBundle;
 
-public class NewConnectionController {
+public class NewConnectionController implements Initializable {
 
     @FXML
     private TextField con_name, host_name, port, DB_name, username, password;
     @FXML
     private Button okBtnNewCon, cancelBtnNewCon;
+    @FXML
+    private ChoiceBox<String> dropdown;
 
-    SaveAndRestore sar = new SaveAndRestore();
+    private SaveAndRestore sar = new SaveAndRestore();
 
     //to be able to call methods from MainController and TabController classes
     private static MainController mc;
@@ -25,12 +37,17 @@ public class NewConnectionController {
         tc = tabCont;
     }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        dropdown.setItems(FXCollections.observableArrayList("MySQL", "PostgreSQL"));
+    }
+
 
     //using the input by the user info to connect to their database
-    public void newConnection(){
+    public void newConnection() throws Exception {
         String conName = con_name.getText();
 
-        Connection connection = Database.createConnection( host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText() );
+        Connection connection = Database.createConnection( host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText(), dropdown.getValue() );
 
         //if there was a problem while connecting to the database
         if (connection == null) {
@@ -68,7 +85,7 @@ public class NewConnectionController {
         }
 
         //saving the information so that the user does not have to input it again next time they use the program
-        sar.saveToDB( conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), EncryptDecrypt.encrypt(password.getText()) );
+        sar.saveToDB( conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), /*EncryptDecrypt.encrypt(password.getText(), Const.KEY)*/ password.getText(), dropdown.getValue());
 
         mc.addCon(conName, host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText(), connection);
         mc.setTab(mc.getCon());
