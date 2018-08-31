@@ -11,7 +11,7 @@ public class SaveAndRestore {
 
     //saving info to database so that the user doesn't have to enter it every time they run the program
     public void saveToDB(String conName, String hostName, String port, String databaseName, String user, String pass, String DBtype) {
-        try (PreparedStatement prSt = con.prepareStatement("insert into mymysqlwb values (?,?,?,?,?,?,?,?)")) {
+        try (PreparedStatement prSt = con.prepareStatement("insert into sql_admin values (?,?,?,?,?,?,?,?)")) {
             prSt.setString(1, IP);
             prSt.setString(2, conName);
             prSt.setString(3, hostName);
@@ -30,7 +30,7 @@ public class SaveAndRestore {
     //automatically restoring info from database
     public String restoreFromDB() {
         StringBuilder sb = new StringBuilder();
-        try (ResultSet rs = con.createStatement().executeQuery("select * from mymysqlwb where ip = '" + IP + "'")) {
+        try (ResultSet rs = con.createStatement().executeQuery("select * from sql_admin where ip = '" + IP + "'")) {
             while (rs.next()) {
                 String conName = rs.getString("connectionName");
                 String hostName = rs.getString("hostName");
@@ -65,7 +65,7 @@ public class SaveAndRestore {
         boolean res = false;
 
         try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("select ip from mymysqlwb")) {
+             ResultSet rs = stmt.executeQuery("select ip from sql_admin")) {
 
             while (rs.next()) {
                 String ips = rs.getString("ip");

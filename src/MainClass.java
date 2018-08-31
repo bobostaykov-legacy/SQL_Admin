@@ -1,3 +1,4 @@
+import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,9 +9,15 @@ import javafx.stage.Stage;
 public class MainClass extends Application {
 
     private static MainController mc;
+    private Parent root;
 
     public static void injectMainController(MainController mainCont){
         mc = mainCont;
+    }
+
+    @Override
+    public void init() throws Exception {
+        root = FXMLLoader.load(getClass().getResource("main.fxml"));
     }
 
     @Override
@@ -34,14 +41,14 @@ public class MainClass extends Application {
             sceneHeight = 2550;
         }
 
-        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
-        primaryStage.setTitle("Bobo's MySQL Workbench");
+        primaryStage.setTitle("Bobo's SQL Admin");
         primaryStage.setScene(new Scene(root, sceneWidth, sceneHeight));
         primaryStage.show();
         mc.tabPaneRequestFocus();
+
     }
 
     public static void main(String[] args) {
-        launch(args);
+        LauncherImpl.launchApplication(MainClass.class, AppPreloader.class, args);
     }
 }

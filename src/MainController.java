@@ -1,4 +1,6 @@
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 
 import javafx.fxml.FXMLLoader;
@@ -10,8 +12,10 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -90,17 +94,37 @@ public class MainController implements Initializable {
 
     //the window in which needed information about the database is input by the user
     public void openNewConWindow(){
-        Parent root;
-        try {
-            root = FXMLLoader.load(getClass().getResource("newConnection.fxml"));
+        //loading the window in a background task, in order to show a progress indicator
+        Task<Parent> loadTask = new Task<Parent>() {
+            @Override
+            public Parent call() throws IOException {
+                return FXMLLoader.load(getClass().getResource("newConnection.fxml"));
+            }
+        };
+
+        ProgressIndicator progress = new ProgressIndicator();
+        progress.progressProperty().bind(loadTask.progressProperty());
+        BorderPane root = new BorderPane();
+        root.setPrefSize(70, 70);
+        root.setCenter(progress);
+        root.setBackground(Background.EMPTY);
+        Stage taskUpdateStage = new Stage();
+        taskUpdateStage.initStyle(StageStyle.TRANSPARENT);
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        taskUpdateStage.setScene(scene);
+        taskUpdateStage.show();
+
+        loadTask.setOnSucceeded(e -> {
+            taskUpdateStage.hide();
             Stage stage = new Stage();
             stage.setTitle("Create a new Connection");
-            stage.setScene(new Scene(root, 600, 460));
+            stage.setScene(new Scene(loadTask.getValue(), 600, 460));
             stage.setResizable(false);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
+
+        new Thread(loadTask).start();
     }
 
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MyMySQLWB.iml" filepath="$PROJECT_DIR$/MyMySQLWB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SQL_Admin.iml" filepath="$PROJECT_DIR$/SQL_Admin.iml" />
     </modules>
   </component>
 </project>

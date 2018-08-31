@@ -29,9 +29,7 @@ public class Database {
                 url = "jdbc:postgresql://" + hostname + ":" + port + "/" + DBname + "?unicode=true&autoReconnect=true&useSSL=false";
             }
             return DriverManager.getConnection(url, username, password);
-        } catch (ClassNotFoundException e) {
-            return null;
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             return null;
         }
     }
@@ -47,13 +45,21 @@ public class Database {
             but provides a way to dynamically resize the window so that the contents resize as well and everything looks good. Unfortunately, I
             didn't find a way to retain that functionality with the other tabs, where the content of tab.fxml is used.
             */
-            if (mc.isMainTab()) mc.setMsg("The query was executed successfully!");
-            else tc.setMsg("The query was executed successfully!");
+            if (mc.isMainTab()) {
+                mc.clearTable();
+                mc.setMsg("The query was executed successfully");
+            }
+            else {
+                tc.clearTable();
+                tc.setMsg("The query was executed successfully");
+            }
 
         } catch (SQLException e) {
 
-            if (mc.isMainTab()) mc.setMsg(e.getMessage());
-            else tc.setMsg(e.getMessage());
+            if (mc.isMainTab())
+                mc.setMsg(e.getMessage());
+            else
+                tc.setMsg(e.getMessage());
 
         }
     }
@@ -96,8 +102,8 @@ public class Database {
 
             sqlTable.setItems(data);
 
-            if (mc.isMainTab()) mc.setMsg("The query was executed successfully!");
-            else tc.setMsg("The query was executed successfully!");
+            if (mc.isMainTab()) mc.setMsg("The query was executed successfully");
+            else tc.setMsg("The query was executed successfully");
 
         } catch (SQLException e) {
 
