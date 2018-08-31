@@ -1,3 +1,4 @@
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 public class TabController implements Initializable {
@@ -30,8 +32,13 @@ public class TabController implements Initializable {
     private Label msg;
     @FXML
     private Button exe_btn;
+    @FXML
+    private ComboBox<String> history_tab;
 
     private SaveAndRestore sar = new SaveAndRestore();
+
+    //to store the previously executed queries
+    private LinkedList<String> prevQueries = new LinkedList<>();
 
     //to be able to call methods from MainController class
     private static MainController mc = new MainController();
@@ -111,9 +118,11 @@ public class TabController implements Initializable {
         boolean alter = firstWord.equalsIgnoreCase("alter");
 
         if (insert || update || delete || create || drop || use || alter) {
-            Database.executeUpdate(query, con);
+            if (Database.executeUpdate(query, con))
+                addQueryToQueue(query);
         } else {
-            Database.executeQuery(query, con);
+            if (Database.executeQuery(query, con))
+                addQueryToQueue(query);
         }
     }
 
@@ -187,4 +196,25 @@ public class TabController implements Initializable {
             connections_view.getChildren().remove(curr.getButton());
         }
     }
+
+
+    private void addQueryToQueue(String query) {
+        prevQueries.remove(query);
+        prevQueries.add(query);
+        if (prevQueries.size() > 10)
+            prevQueries.removeFirst();
+        history_tab.setItems(FXCollections.observableArrayList(prevQueries));
+        if (prevQueries.size() == 2)
+            history_tab.setVisibleRowCount(5);
+        if (prevQueries.size() == 3)
+            history_tab.setVisibleRowCount(10);
+    }
+
+
+    public void selectQueryFromQueue_tab() {
+        String query = history_tab.getSelectionModel().getSelectedItem();
+        history_tab.getSelectionModel().clearSelection();
+        query_field.setText(query);
+    }
+
 }

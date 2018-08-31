@@ -1,4 +1,5 @@
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -40,8 +42,13 @@ public class MainController implements Initializable {
     private Tab main_tab;
     @FXML
     private Button exe_btn_1;
+    @FXML
+    private ComboBox<String> history_main;
 
     private SaveAndRestore sar = new SaveAndRestore();
+
+    //to store the previously executed queries
+    private LinkedList<String> prevQueries = new LinkedList<>();
 
     //to store the active connections
     private LinkedList<ConnectionInfo> connections = new LinkedList<>();
@@ -228,9 +235,11 @@ public class MainController implements Initializable {
         boolean alter = firstWord.equalsIgnoreCase("alter");
 
         if (insert || update || delete || create || drop || use || alter) {
-            Database.executeUpdate(query, con);
+            if (Database.executeUpdate(query, con))
+                addQueryToQueue(query);
         } else {
-            Database.executeQuery(query, con);
+            if (Database.executeQuery(query, con))
+                addQueryToQueue(query);
         }
     }
 
@@ -314,6 +323,26 @@ public class MainController implements Initializable {
         for (Buttons curr : buttons) {
             connections_view_1.getChildren().remove(curr.getButton());
         }
+    }
+
+
+    private void addQueryToQueue(String query) {
+        prevQueries.remove(query);
+        prevQueries.add(query);
+        if (prevQueries.size() > 10)
+            prevQueries.removeFirst();
+        history_main.setItems(FXCollections.observableArrayList(prevQueries));
+        if (prevQueries.size() == 2)
+            history_main.setVisibleRowCount(5);
+        if (prevQueries.size() == 3)
+            history_main.setVisibleRowCount(10);
+    }
+
+
+    public void selectQueryFromQueue_main() {
+        String query = history_main.getSelectionModel().getSelectedItem();
+        history_main.getSelectionModel().clearSelection();
+        query_field_1.setText(query);
     }
 
 }

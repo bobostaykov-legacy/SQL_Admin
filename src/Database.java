@@ -35,7 +35,9 @@ public class Database {
     }
 
 
-    public static void executeUpdate(String query, Connection con) {
+    public static boolean executeUpdate(String query, Connection con) {
+        boolean result;
+
         try {
 
             con.createStatement().executeUpdate(query);
@@ -54,6 +56,8 @@ public class Database {
                 tc.setMsg("The query was executed successfully");
             }
 
+            result = true;
+
         } catch (SQLException e) {
 
             if (mc.isMainTab())
@@ -61,12 +65,16 @@ public class Database {
             else
                 tc.setMsg(e.getMessage());
 
+            result = false;
         }
+
+        return result;
     }
 
 
-    public static void executeQuery(String query, Connection con) {
+    public static boolean executeQuery(String query, Connection con) {
 
+        boolean result;
         TableView<ObservableList> sqlTable;
         if (mc.isMainTab()) sqlTable = mc.getSQLTable();
         else sqlTable = tc.getSQLTable();
@@ -78,7 +86,7 @@ public class Database {
             if (mc.isMainTab()) mc.clearTable();
             else tc.clearTable();
 
-            //---getting all items from the database table to fill the table in query_view---
+            // --- getting all items from the database table to fill the table in query_view ---
 
             //getting column names
             for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
@@ -105,12 +113,15 @@ public class Database {
             if (mc.isMainTab()) mc.setMsg("The query was executed successfully");
             else tc.setMsg("The query was executed successfully");
 
+            result = true;
+
         } catch (SQLException e) {
 
-            if (mc.isMainTab()) mc.setMsg(e.getMessage());
-            else tc.setMsg(e.getMessage());
+            if (mc.isMainTab()) mc.setMsg(e.getMessage().replace("\n", ""));
+            else tc.setMsg(e.getMessage().replace("\n", ""));
 
+            result = false;
         }
-
+        return result;
     }
 }
