@@ -23,15 +23,15 @@ import java.util.ResourceBundle;
 public class TabController implements Initializable {
 
     @FXML
-    private TextArea query_field;
+    private TextArea query_field_tab;
     @FXML
-    private GridPane tab, query_view, connections_view;
+    private GridPane tab_tab, query_view_tab, connections_view_tab;
     @FXML
-    private TableView<ObservableList> sql_table;
+    private TableView<ObservableList> sql_table_tab;
     @FXML
-    private Label msg;
+    private Label msg_tab;
     @FXML
-    private Button exe_btn;
+    private Button exe_btn_tab;
     @FXML
     private ComboBox<String> history_tab;
 
@@ -55,10 +55,10 @@ public class TabController implements Initializable {
 
         addConButtons();
 
-        exe_btn.setTooltip(new Tooltip("Or use [Ctrl+Enter]"));
+        exe_btn_tab.setTooltip(new Tooltip("Or use [Ctrl+Enter]"));
 
         //the query can also be executed with [Ctrl+Enter]
-        query_field.setOnKeyPressed(e ->  {
+        query_field_tab.setOnKeyPressed(e ->  {
             if ((new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN)).match(e)) {
                 try {
                     executeAction();
@@ -87,21 +87,21 @@ public class TabController implements Initializable {
 
 
     public void switchToQueryView(){
-        connections_view.setVisible(false);
-        query_view.setVisible(true);
+        connections_view_tab.setVisible(false);
+        query_view_tab.setVisible(true);
     }
 
 
     public void switchToConnectionsView(){
-        query_view.setVisible(false);
-        connections_view.setVisible(true);
+        query_view_tab.setVisible(false);
+        connections_view_tab.setVisible(true);
     }
 
 
     //after pressing the button "Execute" the query is being sent to the database and executed
     public void executeAction() throws SQLException {
 
-        String query = query_field.getText();
+        String query = query_field_tab.getText();
         Connection con = null;
         String firstWord = query.split(" ")[0];
 
@@ -118,34 +118,34 @@ public class TabController implements Initializable {
         boolean alter = firstWord.equalsIgnoreCase("alter");
 
         if (insert || update || delete || create || drop || use || alter) {
-            if (Database.executeUpdate(query, con))
+            if (Database.executeUpdate(query, con, sql_table_tab, msg_tab))
                 addQueryToQueue(query);
         } else {
-            if (Database.executeQuery(query, con))
+            if (Database.executeQuery(query, con, sql_table_tab, msg_tab))
                 addQueryToQueue(query);
         }
     }
 
 
     public void setPrefSizeTab(double width, double height){
-        tab.setPrefWidth(width);
-        tab.setPrefHeight(height);
+        tab_tab.setPrefWidth(width);
+        tab_tab.setPrefHeight(height);
     }
 
 
     public TableView<ObservableList> getSQLTable(){
-        return sql_table;
+        return sql_table_tab;
     }
 
 
     //the message to be displayed to the user
-    public void setMsg (String m) {
-        msg.setText(m);
+    public void setMsg(String m) {
+        msg_tab.setText(m);
     }
 
 
     public void clearTable () {
-        sql_table.getColumns().clear();
+        sql_table_tab.getColumns().clear();
     }
 
 
@@ -167,7 +167,7 @@ public class TabController implements Initializable {
     }
 
 
-    //adding the active connections to the connections_view as buttons
+    //adding the active connections to the connections_view_tab as buttons
     private void addConButtons() {
         int i = 1, j = 0;
         for (ConnectionInfo current : mc.allConnections()) {
@@ -180,7 +180,7 @@ public class TabController implements Initializable {
                 switchToQueryView();
                 mc.setTab(current.getConName());
             });
-            connections_view.add(conButton, i, j);
+            connections_view_tab.add(conButton, i, j);
             i++;
             if (i == 4) {
                 i = 0;
@@ -190,10 +190,10 @@ public class TabController implements Initializable {
     }
 
 
-    //removing all buttons from connections_view
+    //removing all buttons from connections_view_tab
     private void removeConButtons() {
         for (Buttons curr : mc.allButtons()) {
-            connections_view.getChildren().remove(curr.getButton());
+            connections_view_tab.getChildren().remove(curr.getButton());
         }
     }
 
@@ -214,7 +214,7 @@ public class TabController implements Initializable {
     public void selectQueryFromQueue_tab() {
         String query = history_tab.getSelectionModel().getSelectedItem();
         history_tab.getSelectionModel().clearSelection();
-        query_field.setText(query);
+        query_field_tab.setText(query);
     }
 
 }

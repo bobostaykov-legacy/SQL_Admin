@@ -1,4 +1,3 @@
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -23,7 +22,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -31,17 +29,17 @@ public class MainController implements Initializable {
     @FXML
     private TabPane tab_pane;
     @FXML
-    private GridPane tab_1, query_view_1, connections_view_1;
+    private GridPane tab_main, query_view_main, connections_view_main;
     @FXML
-    private TextArea query_field_1;
+    private TextArea query_field_main;
     @FXML
-    private TableView<ObservableList> sql_table_1;
+    private TableView<ObservableList> sql_table_main;
     @FXML
-    private Label msg_1;
+    private Label msg_main;
     @FXML
     private Tab main_tab;
     @FXML
-    private Button exe_btn_1;
+    private Button exe_btn_main;
     @FXML
     private ComboBox<String> history_main;
 
@@ -88,10 +86,10 @@ public class MainController implements Initializable {
             addConButtons();
         }
 
-        exe_btn_1.setTooltip(new Tooltip("Or use [Ctrl+Enter]"));
+        exe_btn_main.setTooltip(new Tooltip("Or use [Ctrl+Enter]"));
 
         //the query can also be executed with [Ctrl+Enter]
-        query_field_1.setOnKeyPressed(e ->  {
+        query_field_main.setOnKeyPressed(e ->  {
             if ((new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN)).match(e)) {
                 executeAction();
             }
@@ -136,14 +134,14 @@ public class MainController implements Initializable {
 
 
     public void switchToQueryView(){
-        connections_view_1.setVisible(false);
-        query_view_1.setVisible(true);
+        connections_view_main.setVisible(false);
+        query_view_main.setVisible(true);
     }
 
 
     public void switchToConnectionsView(){
-        query_view_1.setVisible(false);
-        connections_view_1.setVisible(true);
+        query_view_main.setVisible(false);
+        connections_view_main.setVisible(true);
     }
 
 
@@ -156,7 +154,7 @@ public class MainController implements Initializable {
         Parent root = FXMLLoader.load(getClass().getResource("tab.fxml"));
         newTab.setContent(root);
 
-        tc.setPrefSizeTab(tab_1.getWidth(), tab_1.getHeight());
+        tc.setPrefSizeTab(tab_main.getWidth(), tab_main.getHeight());
     }
 
 
@@ -217,7 +215,7 @@ public class MainController implements Initializable {
     //after pressing the button "Execute" the query is being sent to the database and executed
     public void executeAction() {
 
-        String query = query_field_1.getText();
+        String query = query_field_main.getText();
         Connection con = null;
         String firstWord = query.split(" ")[0];
 
@@ -235,28 +233,28 @@ public class MainController implements Initializable {
         boolean alter = firstWord.equalsIgnoreCase("alter");
 
         if (insert || update || delete || create || drop || use || alter) {
-            if (Database.executeUpdate(query, con))
+            if (Database.executeUpdate(query, con, sql_table_main, msg_main))
                 addQueryToQueue(query);
         } else {
-            if (Database.executeQuery(query, con))
+            if (Database.executeQuery(query, con, sql_table_main, msg_main))
                 addQueryToQueue(query);
         }
     }
 
 
     public TableView<ObservableList> getSQLTable(){
-        return sql_table_1;
+        return sql_table_main;
     }
 
 
     //the message to be displayed to the user
     public void setMsg(String m) {
-        msg_1.setText(m);
+        msg_main.setText(m);
     }
 
 
     public void clearTable() {
-        sql_table_1.getColumns().clear();
+        sql_table_main.getColumns().clear();
     }
 
 
@@ -309,7 +307,7 @@ public class MainController implements Initializable {
                 switchToQueryView();
                 setTab(current.getConName());
             });
-            connections_view_1.add(conButton, i, j);
+            connections_view_main.add(conButton, i, j);
             i++;
             if (i == 4) {
                 i = 0;
@@ -321,7 +319,7 @@ public class MainController implements Initializable {
 
     private void removeConButtons() {
         for (Buttons curr : buttons) {
-            connections_view_1.getChildren().remove(curr.getButton());
+            connections_view_main.getChildren().remove(curr.getButton());
         }
     }
 
@@ -342,7 +340,7 @@ public class MainController implements Initializable {
     public void selectQueryFromQueue_main() {
         String query = history_main.getSelectionModel().getSelectedItem();
         history_main.getSelectionModel().clearSelection();
-        query_field_1.setText(query);
+        query_field_main.setText(query);
     }
 
 }

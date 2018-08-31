@@ -1,6 +1,7 @@
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import java.sql.*;
@@ -35,36 +36,16 @@ public class Database {
     }
 
 
-    public static boolean executeUpdate(String query, Connection con) {
+    public static boolean executeUpdate(String query, Connection con, TableView<ObservableList> sqlTable, Label msg) {
         boolean result;
 
         try {
-
             con.createStatement().executeUpdate(query);
-
-            /*
-            The initial tab that opens up when the program is started uses an interface (which is in main.fxml) identical to the one in tab.fxml,
-            but provides a way to dynamically resize the window so that the contents resize as well and everything looks good. Unfortunately, I
-            didn't find a way to retain that functionality with the other tabs, where the content of tab.fxml is used.
-            */
-            if (mc.isMainTab()) {
-                mc.clearTable();
-                mc.setMsg("The query was executed successfully");
-            }
-            else {
-                tc.clearTable();
-                tc.setMsg("The query was executed successfully");
-            }
-
+            msg.setText("The query was executed successfully");
+            sqlTable.getColumns().clear();
             result = true;
-
         } catch (SQLException e) {
-
-            if (mc.isMainTab())
-                mc.setMsg(e.getMessage());
-            else
-                tc.setMsg(e.getMessage());
-
+            msg.setText(e.getMessage());
             result = false;
         }
 
@@ -72,19 +53,14 @@ public class Database {
     }
 
 
-    public static boolean executeQuery(String query, Connection con) {
+    public static boolean executeQuery(String query, Connection con, TableView<ObservableList> sqlTable, Label msg) {
 
         boolean result;
-        TableView<ObservableList> sqlTable;
-        if (mc.isMainTab()) sqlTable = mc.getSQLTable();
-        else sqlTable = tc.getSQLTable();
 
         try (ResultSet rs = con.createStatement().executeQuery(query)) {
 
             ObservableList<ObservableList> data = FXCollections.observableArrayList();
-
-            if (mc.isMainTab()) mc.clearTable();
-            else tc.clearTable();
+            sqlTable.getColumns().clear();
 
             // --- getting all items from the database table to fill the table in query_view ---
 
@@ -109,17 +85,11 @@ public class Database {
             }
 
             sqlTable.setItems(data);
-
-            if (mc.isMainTab()) mc.setMsg("The query was executed successfully");
-            else tc.setMsg("The query was executed successfully");
-
+            msg.setText("The query was executed successfully");
             result = true;
 
         } catch (SQLException e) {
-
-            if (mc.isMainTab()) mc.setMsg(e.getMessage().replace("\n", ""));
-            else tc.setMsg(e.getMessage().replace("\n", ""));
-
+            msg.setText(e.getMessage().replace("\n", ""));
             result = false;
         }
         return result;
