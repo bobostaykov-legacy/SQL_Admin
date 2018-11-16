@@ -1,2 +1,2 @@
 # SQL_Admin
-The executable jar file is under artifacts/SQLAdmin_jar
+The executable jar file is under /artifacts
