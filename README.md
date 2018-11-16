@@ -1,2 +1,2 @@
-# My_MySQL_Workbench
-The executable jar file is under out/artifacts/MyMySQLWB_jar
+# SQL_Admin
+The executable jar file is under artifacts/SQLAdmin_jar
