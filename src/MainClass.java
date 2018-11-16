@@ -11,7 +11,7 @@ public class MainClass extends Application {
     private static MainController mc;
     private Parent root;
 
-    public static void injectMainController(MainController mainCont){
+    static void injectMainController(MainController mainCont){
         mc = mainCont;
     }
 
@@ -21,13 +21,13 @@ public class MainClass extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
 
         int screenWidth = (int) Screen.getPrimary().getBounds().getWidth();
         int screenHeight = (int) Screen.getPrimary().getBounds().getHeight();
 
-        int sceneWidth = 0;
-        int sceneHeight = 0;
+        int sceneWidth;
+        int sceneHeight;
 
         //dynamically set window size, depending on the screen size
         if (screenWidth <= 800 && screenHeight <= 600) {

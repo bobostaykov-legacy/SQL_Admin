@@ -22,6 +22,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -56,7 +57,7 @@ public class MainController implements Initializable {
 
     //to be able to call methods from TabController class
     private static TabController tc = new TabController();
-    public static void injectTabController(TabController tabCont){
+    static void injectTabController(TabController tabCont){
         tc = tabCont;
     }
 
@@ -66,7 +67,7 @@ public class MainController implements Initializable {
         NewConnectionController.injectMainController(this);
         MainClass.injectMainController(this);
         TabController.injectMainController(this);
-        Database.injectMainController(this);
+        //Database.injectMainController(this);
 
 
         //adding the saved connections to the connections_view as buttons if there are any
@@ -133,13 +134,13 @@ public class MainController implements Initializable {
     }
 
 
-    public void switchToQueryView(){
+    void switchToQueryView(){
         connections_view_main.setVisible(false);
         query_view_main.setVisible(true);
     }
 
 
-    public void switchToConnectionsView(){
+    private void switchToConnectionsView(){
         query_view_main.setVisible(false);
         connections_view_main.setVisible(true);
     }
@@ -159,52 +160,52 @@ public class MainController implements Initializable {
 
 
     //giving the current tab a name
-    public void setTab(String name){
+    void setTab(String name){
         Tab currentTab = tab_pane.getSelectionModel().getSelectedItem();
         currentTab.setText(name);
     }
 
 
     //adding a connection to the LinkedList
-    public void addCon(String conName, String hostName, String port, String databaseName, String user, String pass, Connection connection){
+    void addCon(String conName, String hostName, String port, String databaseName, String user, String pass, Connection connection){
         connections.add(new ConnectionInfo(conName, hostName, port, databaseName, user, pass, connection));
     }
 
 
     //getting lastly added connection
-    public String getCon(){
+    String getCon(){
         if (connections.size() == 0) return "null";
         return connections.getLast().getConName();
     }
 
 
-    public LinkedList<ConnectionInfo> allConnections(){
+    LinkedList<ConnectionInfo> allConnections(){
         return connections;
     }
 
 
-    public LinkedList<Buttons> allButtons() {
+    LinkedList<Buttons> allButtons() {
         return buttons;
     }
 
 
-    public void tabPaneRequestFocus(){
+    void tabPaneRequestFocus(){
         tab_pane.requestFocus();
     }
 
 
-    public boolean isMainTab () {
+    boolean isMainTab () {
         return tab_pane.getSelectionModel().getSelectedItem() == main_tab;
     }
 
 
-    public String getCurrentTabName(){
+    String getCurrentTabName(){
         return tab_pane.getSelectionModel().getSelectedItem().getText();
     }
 
 
     //checks if a connection is already active
-    public boolean isConNameInList(String name){
+    boolean isConNameInList(String name){
         for (ConnectionInfo current : connections){
             if (current.getConName().equals(name)) return true;
         }
@@ -233,28 +234,12 @@ public class MainController implements Initializable {
         boolean alter = firstWord.equalsIgnoreCase("alter");
 
         if (insert || update || delete || create || drop || use || alter) {
-            if (Database.executeUpdate(query, con, sql_table_main, msg_main))
+            if (Database.executeUpdate(query, Objects.requireNonNull(con), sql_table_main, msg_main))
                 addQueryToQueue(query);
         } else {
             if (Database.executeQuery(query, con, sql_table_main, msg_main))
                 addQueryToQueue(query);
         }
-    }
-
-
-    public TableView<ObservableList> getSQLTable(){
-        return sql_table_main;
-    }
-
-
-    //the message to be displayed to the user
-    public void setMsg(String m) {
-        msg_main.setText(m);
-    }
-
-
-    public void clearTable() {
-        sql_table_main.getColumns().clear();
     }
 
 
@@ -276,15 +261,15 @@ public class MainController implements Initializable {
     }
 
 
-    public boolean buttonInList(Button btn) {
+    boolean buttonNotInList(Button btn) {
         for (Buttons curr : buttons) {
-            if (curr.getButton().equals(btn)) return true;
+            if (curr.getButton().equals(btn)) return false;
         }
-        return false;
+        return true;
     }
 
 
-    public void removeButton(String btnName) {
+    void removeButton(String btnName) {
         for (Buttons curr : buttons) {
             if (curr.getName().equals(btnName)) {
                 buttons.remove(curr);
@@ -299,7 +284,7 @@ public class MainController implements Initializable {
         int i = 1, j = 0;
         for (ConnectionInfo current : connections) {
             Button conButton = new Button(current.getConName());
-            if (!buttonInList(conButton)) buttons.add(new Buttons(current.getConName(), conButton));
+            if (buttonNotInList(conButton)) buttons.add(new Buttons(current.getConName(), conButton));
             conButton.setMaxWidth(125);
             conButton.setPrefHeight(62);
             conButton.setBlendMode(BlendMode.MULTIPLY);
@@ -341,6 +326,35 @@ public class MainController implements Initializable {
         String query = history_main.getSelectionModel().getSelectedItem();
         history_main.getSelectionModel().clearSelection();
         query_field_main.setText(query);
+
+//        Task<Void> sleeper = new Task<Void>() {
+//            @Override
+//            protected Void call() {
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                }
+//                return null;
+//            }
+//        };
+//        sleeper.setOnSucceeded(event -> {
+//            history_main.getSelectionModel().clearSelection();
+//            query_field_main.setText(query);
+//        });
+//        new Thread(sleeper).start();
+
+
+//        new Timer().schedule(
+//                new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        history_main.getSelectionModel().clearSelection();
+//                        query_field_main.setText(query);
+//                    }
+//                },
+//                200
+//        );
+
     }
 
 }

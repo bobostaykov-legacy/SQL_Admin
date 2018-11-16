@@ -5,7 +5,7 @@ public class ConnectionInfo {
     private String conName, hostName, port, databaseName, user, pass;
     private Connection connection;
 
-    public ConnectionInfo(String conName, String hostName, String port, String databaseName, String user, String pass, Connection connection){
+    ConnectionInfo(String conName, String hostName, String port, String databaseName, String user, String pass, Connection connection){
         this.conName = conName;
         this.hostName = hostName;
         this.port = port;
@@ -15,31 +15,19 @@ public class ConnectionInfo {
         this.connection = connection;
     }
 
-    public String getConName(){
+    String getConName(){
         return conName;
     }
 
-    public String getHostName(){
+    String getHostName(){
         return hostName;
     }
 
-    public String getPort(){
-        return port;
-    }
-
-    public String getDatabaseName(){
+    String getDatabaseName(){
         return databaseName;
     }
 
-    public String getUser(){
-        return user;
-    }
-
-    public String getPass(){
-        return pass;
-    }
-
-    public Connection getConnection(){
+    Connection getConnection(){
         return connection;
     }
 

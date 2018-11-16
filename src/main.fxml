@@ -79,7 +79,7 @@
                         <RowConstraints percentHeight="25.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Button blendMode="MULTIPLY" mnemonicParsing="false" onAction="#openNewConWindow" prefHeight="48.0" prefWidth="125.0" text="New Connection" />
+                        <Button blendMode="MULTIPLY" cache="true" mnemonicParsing="false" onAction="#openNewConWindow" prefHeight="48.0" prefWidth="125.0" text="New Connection" />
                     </children>
                   <padding>
                      <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />

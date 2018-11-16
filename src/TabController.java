@@ -1,5 +1,6 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,14 +11,19 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class TabController implements Initializable {
@@ -42,7 +48,7 @@ public class TabController implements Initializable {
 
     //to be able to call methods from MainController class
     private static MainController mc = new MainController();
-    public static void injectMainController(MainController mainCont){
+    static void injectMainController(MainController mainCont){
         mc = mainCont;
     }
 
@@ -51,7 +57,7 @@ public class TabController implements Initializable {
     public void initialize (URL location, ResourceBundle resources) {
         NewConnectionController.injectTabController(this);
         MainController.injectTabController(this);
-        Database.injectTabController(this);
+        //Database.injectTabController(this);
 
         addConButtons();
 
@@ -60,11 +66,7 @@ public class TabController implements Initializable {
         //the query can also be executed with [Ctrl+Enter]
         query_field_tab.setOnKeyPressed(e ->  {
             if ((new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN)).match(e)) {
-                try {
-                    executeAction();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
+                executeAction();
             }
         });
     }
@@ -72,34 +74,54 @@ public class TabController implements Initializable {
 
     //the window in which needed information about the database is input by the user
     public void openNewConWindow(){
-        Parent root;
-        try {
-            root = FXMLLoader.load(getClass().getResource("newConnection.fxml"));
+        //loading the window in a background task, in order to show a progress indicator
+        Task<Parent> loadTask = new Task<Parent>() {
+            @Override
+            public Parent call() throws IOException {
+                return FXMLLoader.load(getClass().getResource("newConnection.fxml"));
+            }
+        };
+
+        ProgressIndicator progress = new ProgressIndicator();
+        progress.progressProperty().bind(loadTask.progressProperty());
+        BorderPane root = new BorderPane();
+        root.setPrefSize(70, 70);
+        root.setCenter(progress);
+        root.setBackground(Background.EMPTY);
+        Stage taskUpdateStage = new Stage();
+        taskUpdateStage.initStyle(StageStyle.TRANSPARENT);
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        taskUpdateStage.setScene(scene);
+        taskUpdateStage.show();
+
+        loadTask.setOnSucceeded(e -> {
+            taskUpdateStage.hide();
             Stage stage = new Stage();
             stage.setTitle("Create a new Connection");
-            stage.setScene(new Scene(root, 600, 400));
+            stage.setScene(new Scene(loadTask.getValue(), 600, 460));
             stage.setResizable(false);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
+
+        new Thread(loadTask).start();
     }
 
 
-    public void switchToQueryView(){
+    void switchToQueryView(){
         connections_view_tab.setVisible(false);
         query_view_tab.setVisible(true);
     }
 
 
-    public void switchToConnectionsView(){
+    private void switchToConnectionsView(){
         query_view_tab.setVisible(false);
         connections_view_tab.setVisible(true);
     }
 
 
     //after pressing the button "Execute" the query is being sent to the database and executed
-    public void executeAction() throws SQLException {
+    public void executeAction() {
 
         String query = query_field_tab.getText();
         Connection con = null;
@@ -118,7 +140,7 @@ public class TabController implements Initializable {
         boolean alter = firstWord.equalsIgnoreCase("alter");
 
         if (insert || update || delete || create || drop || use || alter) {
-            if (Database.executeUpdate(query, con, sql_table_tab, msg_tab))
+            if (Database.executeUpdate(query, Objects.requireNonNull(con), sql_table_tab, msg_tab))
                 addQueryToQueue(query);
         } else {
             if (Database.executeQuery(query, con, sql_table_tab, msg_tab))
@@ -127,25 +149,9 @@ public class TabController implements Initializable {
     }
 
 
-    public void setPrefSizeTab(double width, double height){
+    void setPrefSizeTab(double width, double height){
         tab_tab.setPrefWidth(width);
         tab_tab.setPrefHeight(height);
-    }
-
-
-    public TableView<ObservableList> getSQLTable(){
-        return sql_table_tab;
-    }
-
-
-    //the message to be displayed to the user
-    public void setMsg(String m) {
-        msg_tab.setText(m);
-    }
-
-
-    public void clearTable () {
-        sql_table_tab.getColumns().clear();
     }
 
 
@@ -172,7 +178,7 @@ public class TabController implements Initializable {
         int i = 1, j = 0;
         for (ConnectionInfo current : mc.allConnections()) {
             Button conButton = new Button(current.getConName());
-            if (!mc.buttonInList(conButton)) mc.allButtons().add(new Buttons(current.getConName(), conButton));
+            if (mc.buttonNotInList(conButton)) mc.allButtons().add(new Buttons(current.getConName(), conButton));
             conButton.setMaxWidth(125);
             conButton.setPrefHeight(62);
             conButton.setBlendMode(BlendMode.MULTIPLY);

@@ -14,7 +14,7 @@ public class AppPreloader extends Preloader {
 
     private Stage stage;
 
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         this.stage = stage;
 
         VBox loading = new VBox(20);

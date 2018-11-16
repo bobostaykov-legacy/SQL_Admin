@@ -1,44 +1,55 @@
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.SecureRandom;
 
-public class EncryptDecrypt {
+import org.apache.commons.codec.binary.Base64;
 
-    private static Cipher ecipher;
-    private static Cipher dcipher;
+import java.nio.charset.StandardCharsets;
 
-    private static byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    private static IvParameterSpec ivspec = new IvParameterSpec(iv);
+class EncryptDecrypt {
 
-    public static String encrypt(String str, SecretKey key) throws Exception {
+    static String encrypt(String value) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(Const.INIT_VECTOR.getBytes(StandardCharsets.UTF_8));
+            SecretKeySpec sKeySpec = new SecretKeySpec(Const.KEY.getBytes(StandardCharsets.UTF_8), "AES");
 
-        ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        ecipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, sKeySpec, iv);
 
-        // Encode the string into bytes using utf-8
-        byte[] utf8 = str.getBytes("UTF8");
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+            System.out.println("encrypted string: "
+                    + Base64.encodeBase64String(encrypted));
 
-        // Encrypt
-        byte[] enc = ecipher.doFinal(utf8);
+            return Base64.encodeBase64String(encrypted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-        // Encode bytes to base64 to get a string
-        return new sun.misc.BASE64Encoder().encode(enc);
+        return null;
     }
 
+    static String decrypt(String encrypted) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(Const.INIT_VECTOR.getBytes(StandardCharsets.UTF_8));
+            SecretKeySpec sKeySpec = new SecretKeySpec(Const.KEY.getBytes(StandardCharsets.UTF_8), "AES");
 
-    public static String decrypt(String str, SecretKey key) throws Exception {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iv);
 
-        dcipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        dcipher.init(Cipher.DECRYPT_MODE, key, ivspec);
+            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
 
-        // Decode base64 to get bytes
-        byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(str);
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-        byte[] utf8 = dcipher.doFinal(dec);
-
-        // Decode using utf-8
-        return new String(utf8, "UTF8");
+        return null;
     }
+
+//    public static void main(String[] args) {
+//        String key = "Bar12345Bar12345"; // 128 bit key
+//        String initVector = "RandomInitVector"; // 16 bytes IV
+//
+//        System.out.println(encrypt(key, initVector, "Hello World!"));
+//    }
 }

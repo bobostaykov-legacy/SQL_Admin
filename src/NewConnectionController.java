@@ -7,13 +7,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.URL;
-import java.security.SecureRandom;
 import java.sql.Connection;
-import java.util.Base64;
 import java.util.ResourceBundle;
 
 public class NewConnectionController implements Initializable {
@@ -30,10 +25,10 @@ public class NewConnectionController implements Initializable {
     //to be able to call methods from MainController and TabController classes
     private static MainController mc;
     private static TabController tc;
-    public static void injectMainController(MainController mainCont){
+    static void injectMainController(MainController mainCont){
         mc = mainCont;
     }
-    public static void injectTabController(TabController tabCont){
+    static void injectTabController(TabController tabCont){
         tc = tabCont;
     }
 
@@ -44,7 +39,7 @@ public class NewConnectionController implements Initializable {
 
 
     //using the input by the user info to connect to their database
-    public void newConnection() throws Exception {
+    public void newConnection() {
         String conName = con_name.getText();
 
         Connection connection = Database.createConnection( host_name.getText(), port.getText(), DB_name.getText(), username.getText(), password.getText(), dropdown.getValue() );

@@ -8,18 +8,18 @@ import java.sql.*;
 
 public class Database {
 
-    private static MainController mc = new MainController();
-    private static TabController tc = new TabController();
-    public static void injectMainController (MainController mainCont){
-        mc = mainCont;
-    }
-    public static void injectTabController (TabController tabCont) {
-        tc = tabCont;
-    }
+//    private static MainController mc = new MainController();
+//    private static TabController tc = new TabController();
+//    static void injectMainController (MainController mainCont){
+//        mc = mainCont;
+//    }
+//    static void injectTabController (TabController tabCont) {
+//        tc = tabCont;
+//    }
 
 
     //creating connection to the database
-    public static Connection createConnection(String hostname, String port, String DBname, String username, String password, String DBtype){
+    static Connection createConnection(String hostname, String port, String DBname, String username, String password, String DBtype){
         String url;
         try {
             if (DBtype.equals("MySQL")) {
@@ -36,7 +36,7 @@ public class Database {
     }
 
 
-    public static boolean executeUpdate(String query, Connection con, TableView<ObservableList> sqlTable, Label msg) {
+    static boolean executeUpdate(String query, Connection con, TableView<ObservableList> sqlTable, Label msg) {
         boolean result;
 
         try {
@@ -53,7 +53,7 @@ public class Database {
     }
 
 
-    public static boolean executeQuery(String query, Connection con, TableView<ObservableList> sqlTable, Label msg) {
+    static boolean executeQuery(String query, Connection con, TableView<ObservableList> sqlTable, Label msg) {
 
         boolean result;
 
